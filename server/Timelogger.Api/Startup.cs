@@ -18,6 +18,7 @@ using Dapper;
 using System.Data.SQLite;
 using System.Data.Entity.Migrations.Design;
 using Timelogger.Data.Migrations;
+using ExampleProject.Services;
 
 namespace Timelogger.Api
 {
@@ -37,6 +38,14 @@ namespace Timelogger.Api
             services.AddControllers();
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder => builder.WithOrigins("http://localhost:3000")
+                                      .AllowAnyMethod()
+                                      .AllowAnyHeader());
+            });
+
             // Register Dapper connection factory
             services.AddScoped<IDbConnection>(sp =>
                 new DapperConnectionFactory(Configuration.GetConnectionString("DefaultConnection")).CreateConnection());
@@ -47,23 +56,6 @@ namespace Timelogger.Api
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<ITimeRegistrationService, TimeRegistrationService>();
         }
-
-/*        private async Task ExecuteSqlScriptIfDatabaseNotExists(IServiceProvider serviceProvider)
-        {
-            var connectionString = Configuration.GetConnectionString("DefaultConnection");
-            var dbFilePath = new SQLiteConnectionStringBuilder(connectionString).DataSource;
-
-            if (!File.Exists(dbFilePath))
-            {
-                using (var scope = serviceProvider.CreateScope())
-                {
-                    var dbConnection = scope.ServiceProvider.GetRequiredService<IDbConnection>();
-
-                    await dbConnection.ExecuteAsync(MigrationsCommands.InitCreate);
-                }
-            }
-        }*/
-
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -83,6 +75,8 @@ namespace Timelogger.Api
 
             app.UseRouting();
 
+            app.UseCors();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -90,9 +84,11 @@ namespace Timelogger.Api
                 endpoints.MapControllers();
             });
 
+   
+
             // Execute the InitialCreate.sql script
             DatabaseInitializer.Initialize(Configuration.GetSection("SqlLiteDbName").Get<string>());
-           // ExecuteSqlScriptIfDatabaseNotExists(app.ApplicationServices).GetAwaiter().GetResult();
+
         }
     }
 }

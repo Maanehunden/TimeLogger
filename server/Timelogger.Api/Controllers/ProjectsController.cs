@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Timelogger.Api.DTOs;
 using Timelogger.Api.Services;
@@ -7,6 +8,7 @@ namespace Timelogger.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableCors("AllowSpecificOrigin")]
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectService _projectService;

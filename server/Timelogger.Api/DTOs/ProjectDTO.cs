@@ -10,4 +10,4 @@ namespace Timelogger.Api.DTOs
         public int CustomerId { get; set; }
         public string CustomerName { get; set; } // This could be useful to display customer information
     }
-}
+}       

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ExampleProject.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Timelogger.Api.DTOs;
@@ -47,5 +48,6 @@ namespace Timelogger.Api.Services
         {
             await _timeRegistrationRepository.DeleteTimeRegistrationAsync(id);
         }
+
     }
 }
